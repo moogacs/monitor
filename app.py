@@ -2,6 +2,7 @@ import yaml
 import os
 import time
 import sys
+import threading
 
 from kafka_client.Consumer import Consumer
 from kafka_client.Producer import Producer
@@ -46,7 +47,7 @@ def start_mointoring(monitor_file, producer, consumer):
 if len(sys.argv) > 1:
     filepath = sys.argv[1]
 
-def run(topic, db, user, pw, host, port, table, filepath=None):
+def run(topic, db, user, pw, host, port, table, is_test, filepath=None):
     if filepath:
         monitor_file = read_yaml_monitor_file(filepath)
     else:
@@ -61,9 +62,9 @@ def run(topic, db, user, pw, host, port, table, filepath=None):
 
     interval =  monitor_file['interval']
 
-    producer = Producer(topic, interval)
+    producer = Producer(topic, interval, is_test)
 
-    consumer = Consumer(topic, db, user, pw, host, port, table)
+    consumer = Consumer(topic, db, user, pw, host, port, table, is_test)
 
     start_mointoring(monitor_file, producer, consumer)
 
@@ -85,6 +86,7 @@ if __name__ == '__main__':
             Config.PS_HOST,
             Config.PS_PORT,
             Config.PS_WEBSITE_TABLE_NAME,
+            False,
             sys.argv[1])
     else:
         run(Config.K_MONITOR_TOPIC,
@@ -93,4 +95,5 @@ if __name__ == '__main__':
             Config.PS_PASSWORD,
             Config.PS_HOST,
             Config.PS_PORT,
-            Config.PS_WEBSITE_TABLE_NAME)
+            Config.PS_WEBSITE_TABLE_NAME,
+            False)

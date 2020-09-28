@@ -12,9 +12,10 @@ from config import Config
 class Producer(threading.Thread):
     message_count = 0
 
-    def __init__(self, topic: str, interval: int):
+    def __init__(self, topic: str, interval: int, is_test: bool):
         threading.Thread.__init__(self)
-        threading.Thread.daemon = True
+        if is_test:
+            threading.Thread.daemon = True
         self.stop_event = threading.Event()
         self.interval = interval
         self.topic = topic

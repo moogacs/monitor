@@ -8,7 +8,7 @@ from datetime import datetime
 class Consumer(threading.Thread):
     message_count = 0
     
-    def __init__(self, topic: str, db: str, user: str, pw: str, host: str, port: str, table: str):        
+    def __init__(self, topic: str, db: str, user: str, pw: str, host: str, port: str, table: str, is_test: bool):
         self.topic = topic
         self.db = db
         self.user = user
@@ -18,7 +18,10 @@ class Consumer(threading.Thread):
         self.table = table
 
         threading.Thread.__init__(self)
-        threading.Thread.daemon = True
+
+        if is_test:
+            threading.Thread.daemon = True
+
         psql_conn = Database(self.db, self.user, self.pw, self.host, self.port)
         psql_conn.query( """ CREATE TABLE IF NOT EXISTS """ + self.table + """ 
                         (name varchar(255) NOT NULL,

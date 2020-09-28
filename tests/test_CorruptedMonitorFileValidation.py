@@ -20,6 +20,7 @@ class test_CorruptedMonitorFileValidation(unittest.TestCase):
                                                 Config.PS_HOST,
                                                 Config.PS_PORT,
                                                 Config.PS_TEST_WEBSITE_TABLE_NAME,
+                                                True,
                                                 "tests/t_monitor_corrupted_interval.yaml"))
     def test_a_corrupted_monitor_file(self):
             prod, cons = app.run(Config.K_MONITOR_TOPIC,
@@ -29,6 +30,7 @@ class test_CorruptedMonitorFileValidation(unittest.TestCase):
                                 Config.PS_HOST,
                                 Config.PS_PORT,
                                 Config.PS_TEST_WEBSITE_TABLE_NAME,
+                                True,
                                 "tests/t_monitor_corrupted.yaml")
             time.sleep(10)
             app.stop_monitor(prod, cons)

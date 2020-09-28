@@ -18,7 +18,8 @@ class ProduceEqualConsumer(unittest.TestCase):
                             Config.PS_PASSWORD,
                             Config.PS_HOST,
                             Config.PS_PORT,
-                            Config.PS_TEST_WEBSITE_TABLE_NAME,)
+                            Config.PS_TEST_WEBSITE_TABLE_NAME,
+                            True)
         time.sleep(10)
         app.stop_monitor(prod, cons)
         self.assertEqual(Producer.get_message_count(), Consumer.get_message_count())
