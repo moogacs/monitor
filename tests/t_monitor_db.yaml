@@ -1,0 +1,5 @@
+interval: 10
+monitors:
+  - name: monitor 1
+    url: https://aiven.io
+    pattern: Aiven

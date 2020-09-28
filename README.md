@@ -1,2 +1,2 @@
 # monitor
-Websites monitoring system using Kafka, PSQL
+Websites monitor availability over the network 

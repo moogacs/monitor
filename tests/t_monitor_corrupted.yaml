@@ -1,0 +1,16 @@
+interval: 10
+monitors:
+  - name: monitor 1
+    url: http://google.com
+  
+  - name: monitor 2
+    url: google.com
+  
+  - name: monitor 3
+    url: google
+    
+  - name: http://www.facebook.com
+    
+  
+  - url: http://www.bla.com
+    pattern: f
