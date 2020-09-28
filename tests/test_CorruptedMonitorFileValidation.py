@@ -21,7 +21,7 @@ class test_CorruptedMonitorFileValidation(unittest.TestCase):
                                                 Config.PS_PORT,
                                                 Config.PS_TEST_WEBSITE_TABLE_NAME,
                                                 True,
-                                                "tests/t_monitor_corrupted_interval.yaml"))
+                                                "tests/t_monitor_corrupted_interval.yml"))
     def test_a_corrupted_monitor_file(self):
             prod, cons = app.run(Config.K_MONITOR_TOPIC,
                                 Config.PS_DATABASE_NAME,
@@ -31,7 +31,7 @@ class test_CorruptedMonitorFileValidation(unittest.TestCase):
                                 Config.PS_PORT,
                                 Config.PS_TEST_WEBSITE_TABLE_NAME,
                                 True,
-                                "tests/t_monitor_corrupted.yaml")
+                                "tests/t_monitor_corrupted.yml")
             time.sleep(10)
             app.stop_monitor(prod, cons)
             print("Uncorrupted url= " + str(Producer.get_message_count()))

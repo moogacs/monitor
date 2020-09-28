@@ -11,7 +11,7 @@ from config import Config
 
 def read_yaml_monitor_file(filepath=None):
     if not filepath:
-        filepath = "monitor.yaml"
+        filepath = "monitor.yml"
 
     with open(filepath, 'r') as stream:
         try:

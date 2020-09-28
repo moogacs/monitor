@@ -46,7 +46,7 @@ class DB(unittest.TestCase):
                                 Config.PS_PORT,
                                 Config.PS_TEST_WEBSITE_TABLE_NAME,
                                 True,
-                                "tests/t_monitor_db.yaml")
+                                "tests/t_monitor_db.yml")
             time.sleep(5)
             app.stop_monitor(prod, cons)
             
