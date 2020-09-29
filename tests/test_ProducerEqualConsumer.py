@@ -2,14 +2,16 @@ import unittest
 import sys
 import os
 import time
-sys.path.append("..")
 import app
 
-from kafka_client.Consumer import Consumer
-from kafka_client.Producer import Producer
-from config import Config
+from kafka_monitor.consumer import Consumer
+from kafka_monitor.producer import Producer
+from utils.config import Config
+from utils.file import File
 
-class ProduceEqualConsumer(unittest.TestCase):
+# TODO test shoudld have setUP & tearDown but ignored for simplicity
+
+class test_ProducerEqualConsumer(unittest.TestCase):
 
     def test_producer_equal_consumer(self):
         prod, cons = app.run(Config.K_MONITOR_TOPIC,
@@ -20,9 +22,14 @@ class ProduceEqualConsumer(unittest.TestCase):
                             Config.PS_PORT,
                             Config.PS_TEST_WEBSITE_TABLE_NAME,
                             True)
-        time.sleep(10)
+
+        interval = File.read_time_interval()
+
+        time.sleep(interval)
+
         app.stop_monitor(prod, cons)
-        self.assertEqual(Producer.get_message_count(), Consumer.get_message_count())
+
+        self.assertEqual(prod.get_message_count(), cons.get_message_count())
 
 if __name__ == '__main__': 
     unittest.main() 

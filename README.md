@@ -1,20 +1,20 @@
-# monitor
+# Websites Monitor [![Build Status](https://travis-ci.com/moogacs/monitor.svg?branch=master)](https://travis-ci.com/moogacs/monitor)
 This is an app that monitor websites availability over the network with in time interval and sends a response of 
 * response code
 * response message
 * response time
 * search content pattern (optional)
 
-### Quickstart
+## Quickstart
 You can run the app using 2 options with providing 
 1. add websites to `monitor.yml` file
-```
-python app.py
-```
+    ```
+    python app.py
+    ```
 1. create your own file and use `monitor.yml` as an **example** which you can pass it as a variable to the app
-```
-python app.py monitor.yml
-```
+    ```
+    python app.py monitor.yml
+    ```
 ### Createing a docker image:
 ```
 docker build -t monitor .
@@ -26,3 +26,7 @@ docker run monitor
 ```
 python -m unittest discover tests
 ```
+
+## Documentation
+Documentation
+[here](https://github.com/moogacs/monitor/blob/master/docs/DOCUMENTATION.md)

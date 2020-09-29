@@ -1,29 +1,17 @@
-import yaml
 import os
 import time
 import sys
 import threading
 
-from kafka_client.Consumer import Consumer
-from kafka_client.Producer import Producer
-from config import Config
-
-
-def read_yaml_monitor_file(filepath=None):
-    if not filepath:
-        filepath = "monitor.yml"
-
-    with open(filepath, 'r') as stream:
-        try:
-            return yaml.safe_load(stream)
-        except yaml.YAMLError as error:
-            print(error)
+from kafka_monitor.consumer import Consumer
+from kafka_monitor.producer import Producer
+from utils.config import Config
+from utils.file import File
 
 
 def start_mointoring(monitor_file, producer, consumer):
     monitors =  monitor_file['monitors']
-    consumer.start()
-    
+
     for site in monitors:
         website_task = {}
         if 'name' in site:
@@ -37,25 +25,32 @@ def start_mointoring(monitor_file, producer, consumer):
             website_task["pattern"] = pattern
         
         if not url:
-            print("Error parsing yaml file, has no url")
+            print("Error parsing yaml file, has no url at => ", str(site))
             continue
 
         producer.append_task(website_task)
-    time.sleep(1)
+    
+    consumer.start()
+    
+    # make sure the consumer is ready with setting up db etc. 
+    # before start producing
+    while not consumer.is_ready():
+        time.sleep(1)
+
     producer.start()
+    
 
-if len(sys.argv) > 1:
-    filepath = sys.argv[1]
 
-def run(topic, db, user, pw, host, port, table, is_test, filepath=None):
+def run(topic: str, db: str, user: str, pw: str, host: str, port: str, table: str, is_test: bool, filepath=None):
     if filepath:
-        monitor_file = read_yaml_monitor_file(filepath)
+        monitor_file = File.read_yaml_monitor_file(filepath)
     else:
-        monitor_file = read_yaml_monitor_file()
+        monitor_file = File.read_yaml_monitor_file()
 
     if 'interval' not in monitor_file:
         raise Exception('INTERVAL_NOT_FOUND')
         return
+
     if 'monitors' not in monitor_file:
         raise Exception('MONITORS_NOT_FOUND')
         return
@@ -65,8 +60,8 @@ def run(topic, db, user, pw, host, port, table, is_test, filepath=None):
     producer = Producer(topic, interval, is_test)
 
     consumer = Consumer(topic, db, user, pw, host, port, table, is_test)
-
     start_mointoring(monitor_file, producer, consumer)
+    
 
     return producer, consumer
 

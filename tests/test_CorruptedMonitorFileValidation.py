@@ -2,12 +2,14 @@ import unittest
 import sys
 import os
 import time
-sys.path.append("..")
 import app
 
-from kafka_client.Consumer import Consumer
-from kafka_client.Producer import Producer
-from config import Config
+from kafka_monitor.consumer import Consumer
+from kafka_monitor.producer import Producer
+from utils.config import Config
+from utils.file import File
+
+# TODO test shoudld have setUP & tearDown but ignored for simplicity
 
 class test_CorruptedMonitorFileValidation(unittest.TestCase):
 
@@ -22,6 +24,7 @@ class test_CorruptedMonitorFileValidation(unittest.TestCase):
                                                 Config.PS_TEST_WEBSITE_TABLE_NAME,
                                                 True,
                                                 "tests/t_monitor_corrupted_interval.yml"))
+
     def test_a_corrupted_monitor_file(self):
             prod, cons = app.run(Config.K_MONITOR_TOPIC,
                                 Config.PS_DATABASE_NAME,
@@ -32,10 +35,16 @@ class test_CorruptedMonitorFileValidation(unittest.TestCase):
                                 Config.PS_TEST_WEBSITE_TABLE_NAME,
                                 True,
                                 "tests/t_monitor_corrupted.yml")
-            time.sleep(10)
+
+            interval = File.read_time_interval("tests/t_monitor_corrupted.yml")
+
+            time.sleep(interval)
+
             app.stop_monitor(prod, cons)
-            print("Uncorrupted url= " + str(Producer.get_message_count()))
-            self.assertEqual(Producer.get_message_count(), Consumer.get_message_count())
+
+            print("Uncorrupted url= " + str(prod.get_message_count()))
+
+            self.assertEqual(prod.get_message_count(), cons.get_message_count())
 
 if __name__ == '__main__': 
     unittest.main() 
