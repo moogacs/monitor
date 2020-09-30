@@ -10,17 +10,17 @@ from utils.network import Network
 
 class Producer(threading.Thread):
 
-    def __init__(self, topic: str, interval: int, is_test: bool):
+    def __init__(self, topic: str, interval: int):
         self.interval = interval
         self.topic = topic
         self.tasks = []
-        self.tasks_queue = []
+        self.worker_queue = []
         threading.Thread.__init__(self)
-        self.stop_event = threading.Event()
 
-        # make thread dies with main thread in case of test env
-        if is_test:
+        if Config.is_test():
             threading.Thread.daemon = True
+
+        self.stop_event = threading.Event()
 
         self.producer = KafkaProducer(bootstrap_servers=[Config.K_HOST + ':' + Config.K_PORT],
                                         value_serializer=lambda v: json.dumps(v).encode('utf-8'),
@@ -43,7 +43,12 @@ class Producer(threading.Thread):
         i = 1
         
         # do the work in a different thread to make sure there is no time delay inside the main loop
-        worker_thread = Thread(target = self.check_targets)
+        # the used approach is to create a worker thread with worker queue which is responsible to check taget websites 
+        # then let the producers send the results
+
+        # to make sure the target wesbites is checked in the correct time periodically, re-fill
+        # the worker queue after the time interval 
+        worker_thread = Thread(target = self.tagerts_checker_worker)
         worker_thread.daemon = True
         
 
@@ -56,7 +61,7 @@ class Producer(threading.Thread):
 
             # fill the tasks queue with websites
             for task in self.tasks:
-                self.tasks_queue.append(task)
+                self.worker_queue.append(task)
             
             if not worker_thread.is_alive():
                 worker_thread.start()
@@ -70,13 +75,14 @@ class Producer(threading.Thread):
     def get_message_count(self):
         return self.message_count
 
-    def check_targets(self):
+    def tagerts_checker_worker(self):
         while True:
             if self.stop_event.is_set():
                 break
-
-            if self.tasks_queue:
-                task = self.tasks_queue.pop(0)
+            
+            # pop from the queue, then process, then send
+            if self.worker_queue:
+                task = self.worker_queue.pop(0)
                 pattern = None
                 name = ""
 

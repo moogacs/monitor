@@ -70,6 +70,7 @@ K_SSL_CAT_FILE: SSL Certificate
 K_SSL_CERT_FILE: SSL Certificate
 K_SSL_KEY_FILE: SSL key
 K_MONITOR_TOPIC: topic name
+K_MONITOR_TEST_TOPIC: topic name for test
 K_REPLICA_FACTOR: in case of creating the topic, what is the replication factor number
 K_NO_PARTITIONS: in case of creating the topic, what is the partition number
 

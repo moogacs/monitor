@@ -13,7 +13,8 @@ from kafka.admin import KafkaAdminClient
 # TODO test shoudld have setUP & tearDown but ignored for simplicity
 
 class test_ProducerEqualConsumer(unittest.TestCase):
-
+    Config.set_env(Config.ENV_TEST)
+    
     def test_producer_equal_consumer(self):
         prod, cons = app.run(Config.K_MONITOR_TEST_TOPIC,
                             Config.PS_DATABASE_NAME,
@@ -21,8 +22,7 @@ class test_ProducerEqualConsumer(unittest.TestCase):
                             Config.PS_PASSWORD,
                             Config.PS_HOST,
                             Config.PS_PORT,
-                            Config.PS_TEST_WEBSITE_TABLE_NAME,
-                            True)
+                            Config.PS_TEST_WEBSITE_TABLE_NAME)
 
         interval = File.read_time_interval()
 

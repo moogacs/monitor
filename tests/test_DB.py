@@ -14,7 +14,8 @@ from kafka.admin import KafkaAdminClient
 # TODO test shoudld have setUP & tearDown but ignored for simplicity
 
 class DB(unittest.TestCase):
-
+    Config.set_env(Config.ENV_TEST)
+    
     def test_db(self):
         connection = None
         aiven_results = 0
@@ -48,7 +49,6 @@ class DB(unittest.TestCase):
                                 Config.PS_HOST,
                                 Config.PS_PORT,
                                 Config.PS_TEST_WEBSITE_TABLE_NAME,
-                                True,
                                 "tests/t_monitor_db.yml")
             
             interval = File.read_time_interval("tests/t_monitor_corrupted.yml")

@@ -40,7 +40,7 @@ def start_mointoring(monitor_file, producer, consumer):
 
     producer.start()
 
-def run(topic: str, db: str, user: str, pw: str, host: str, port: str, table: str, is_test: bool, filepath=None):
+def run(topic: str, db: str, user: str, pw: str, host: str, port: str, table: str, filepath=None):
     if filepath:
         monitor_file = File.read_yaml_monitor_file(filepath)
     else:
@@ -56,9 +56,9 @@ def run(topic: str, db: str, user: str, pw: str, host: str, port: str, table: st
 
     interval =  monitor_file['interval']
 
-    producer = Producer(topic, interval, is_test)
+    producer = Producer(topic, interval)
 
-    consumer = Consumer(topic, db, user, pw, host, port, table, is_test)
+    consumer = Consumer(topic, db, user, pw, host, port, table)
     start_mointoring(monitor_file, producer, consumer)
     
 
@@ -79,7 +79,6 @@ if __name__ == '__main__':
             Config.PS_HOST,
             Config.PS_PORT,
             Config.PS_WEBSITE_TABLE_NAME,
-            False,
             sys.argv[1])
     else:
         run(Config.K_MONITOR_TOPIC,
@@ -88,5 +87,4 @@ if __name__ == '__main__':
             Config.PS_PASSWORD,
             Config.PS_HOST,
             Config.PS_PORT,
-            Config.PS_WEBSITE_TABLE_NAME,
-            False)
+            Config.PS_WEBSITE_TABLE_NAME)

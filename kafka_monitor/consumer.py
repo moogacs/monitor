@@ -8,7 +8,7 @@ from kafka.admin import KafkaAdminClient, NewTopic
 
 class Consumer(threading.Thread):
 
-    def __init__(self, topic: str, db: str, user: str, pw: str, host: str, port: str, table: str, is_test: bool):
+    def __init__(self, topic: str, db: str, user: str, pw: str, host: str, port: str, table: str):
         self.topic = topic
         self.db = db
         self.user = user
@@ -18,12 +18,12 @@ class Consumer(threading.Thread):
         self.table = table
 
         threading.Thread.__init__(self)
+
+        if Config.is_test():
+            threading.Thread.daemon = True
+
         self.stop_event = threading.Event()
         self.is_ready_event = threading.Event()
-        
-        # make thread dies with main thread in case of test env
-        if is_test:
-            threading.Thread.daemon = True
 
         self.consumer = KafkaConsumer(bootstrap_servers=[Config.K_HOST+':'+Config.K_PORT],
                                     value_deserializer=lambda m: json.loads(m.decode('utf-8')),
@@ -95,10 +95,10 @@ class Consumer(threading.Thread):
         print("Creating topic \"" + self.topic + "\" ... ")
 
         admin_client = KafkaAdminClient(bootstrap_servers=[Config.K_HOST+':'+Config.K_PORT],
-                                security_protocol=Config.K_SECURITY_PROTOCOL,
-                                ssl_cafile=Config.K_SSL_CAT_FILE,
-                                ssl_certfile=Config.K_SSL_CERT_FILE,
-                                ssl_keyfile=Config.K_SSL_KEY_FILE)
+                                        security_protocol=Config.K_SECURITY_PROTOCOL,
+                                        ssl_cafile=Config.K_SSL_CAT_FILE,
+                                        ssl_certfile=Config.K_SSL_CERT_FILE,
+                                        ssl_keyfile=Config.K_SSL_KEY_FILE)
 
         website_topic  = [NewTopic(name=self.topic, num_partitions=Config.K_NO_PARTITIONS, 
                                     replication_factor=Config.K_REPLICA_FACTOR)]

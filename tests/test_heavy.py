@@ -13,7 +13,8 @@ from kafka.admin import KafkaAdminClient
 # TODO test shoudld have setUP & tearDown but ignored for simplicity
 
 class test_heavy(unittest.TestCase):
-
+    Config.set_env(Config.ENV_TEST)
+    
     def test_heavy(self):
         prod, cons = app.run(Config.K_MONITOR_TEST_TOPIC,
                             Config.PS_DATABASE_NAME,
@@ -22,7 +23,6 @@ class test_heavy(unittest.TestCase):
                             Config.PS_HOST,
                             Config.PS_PORT,
                             Config.PS_TEST_WEBSITE_TABLE_NAME,
-                            True,
                             "tests/t_monitor_heavy_test.yml")
 
         interval = File.read_time_interval("tests/t_monitor_heavy_test.yml")

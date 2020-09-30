@@ -1,5 +1,7 @@
 
 class Config:
+    # flag for working environment
+    currunt_env = ""
 
     #Monitor File path
     MONITERFILE = "monitor.yml"
@@ -24,8 +26,25 @@ class Config:
     K_MONITOR_TEST_TOPIC = "test-website-monitor"
     K_REPLICA_FACTOR = 1
     K_NO_PARTITIONS = 1
-    
+
+
+    #environments
+    ENV_TEST = "test"
+    ENV_PROD = "prod"
 
     #REGEX
     URL_REGEX = "(^(http|https)\:\/\/)[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z]){2,6}([a-zA-Z0-9\.\&\/\?\:@\-_=#])*"
+
+
+    @classmethod
+    def is_test(cls):
+        if cls.currunt_env == Config.ENV_TEST:
+            return True
+
+        return False
+
+    @classmethod
+    def set_env(cls, env: str):
+        cls.currunt_env = env
+           
 
