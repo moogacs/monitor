@@ -3,7 +3,7 @@ import json
 import time
 import sys
 import datetime
-
+from threading import Thread
 from kafka import KafkaProducer
 from utils.config import Config
 from utils.network import Network
@@ -14,7 +14,7 @@ class Producer(threading.Thread):
         self.interval = interval
         self.topic = topic
         self.tasks = []
-
+        self.tasks_queue = []
         threading.Thread.__init__(self)
         self.stop_event = threading.Event()
 
@@ -40,8 +40,43 @@ class Producer(threading.Thread):
 
     def run(self):
         print("Producer runs with topic \"" + self.topic + "\"!")
+        i = 1
+        
+        # do the work in a different thread to make sure there is no time delay inside the main loop
+        worker_thread = Thread(target = self.check_targets)
+        worker_thread.daemon = True
+        
+
         while not self.stop_event.is_set():
+            print("iteration no. => " + str(i))
+            print("Currunt active thread count => " + str(threading.active_count()))
+
+            if self.stop_event.is_set():
+                break
+
+            # fill the tasks queue with websites
             for task in self.tasks:
+                self.tasks_queue.append(task)
+            
+            if not worker_thread.is_alive():
+                worker_thread.start()
+
+            i += 1
+            time.sleep(self.interval)
+
+        self.producer.close()
+        print("Producer of \"" + self.topic + "\" is stopped!")
+    
+    def get_message_count(self):
+        return self.message_count
+
+    def check_targets(self):
+        while True:
+            if self.stop_event.is_set():
+                break
+
+            if self.tasks_queue:
+                task = self.tasks_queue.pop(0)
                 pattern = None
                 name = ""
 
@@ -55,20 +90,12 @@ class Producer(threading.Thread):
                     print("CORRUPTED_URL_VALUE_ERROR with item => " + str(task))
                     continue
 
+                if self.stop_event.is_set():
+                    break
+                
                 website_status = Network.get_website_status(name, task['url'], pattern)
 
                 if website_status:
                     self.message_count += 1
                     print("\nProducer sends " + website_status['name']+ " \n"+ str(website_status))
                     self.producer.send(self.topic, website_status)
-                
-                if self.stop_event.is_set():
-                    break
-                
-            time.sleep(self.interval)
-
-        self.producer.close()
-        print("Producer of \"" + self.topic + "\" is stopped!")
-    
-    def get_message_count(self):
-        return self.message_count

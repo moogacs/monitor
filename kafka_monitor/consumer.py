@@ -1,6 +1,6 @@
 import threading
-from db import Database
 import json
+from db import Database
 from kafka import KafkaConsumer
 from utils.config import Config
 from datetime import datetime
@@ -20,7 +20,7 @@ class Consumer(threading.Thread):
         threading.Thread.__init__(self)
         self.stop_event = threading.Event()
         self.is_ready_event = threading.Event()
-
+        
         # make thread dies with main thread in case of test env
         if is_test:
             threading.Thread.daemon = True
@@ -68,11 +68,11 @@ class Consumer(threading.Thread):
         self.consumer.close()
         print("Consumer of \"" + self.topic + "\" is stopped!")
 
+        # TODO: it is not a good practice to keep the DB connection open instead could be implementing a fixed size list
+        #  which it creates a DB commit once it's full or another approach would be commit every reasonable time interval
         if self.psql_conn:
             self.psql_conn.close()
 
-                
-                        
     def get_message_count(self) -> int:
         return self.message_count
 
@@ -106,9 +106,8 @@ class Consumer(threading.Thread):
         admin_client.create_topics(new_topics=website_topic)
 
     def insert_item_to_db(self, table: str, message: dict):
-
         if not self.psql_conn:
-            print("Erorr Db not connected!")
+            print("Erorr DB is not connected!")
             return
 
         query = "INSERT INTO " + table  + """ (name,

@@ -21,6 +21,7 @@ class Config:
     K_SSL_CERT_FILE = "utils/secrets/service.cert"
     K_SSL_KEY_FILE  = "utils/secrets/service.key"
     K_MONITOR_TOPIC = "website-monitor"
+    K_MONITOR_TEST_TOPIC = "test-website-monitor"
     K_REPLICA_FACTOR = 1
     K_NO_PARTITIONS = 1
     

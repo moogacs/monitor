@@ -1,0 +1,10 @@
+interval: 3
+monitors:
+  - url: https://aiven.io
+  - url: https://aiven.io
+  - url: https://aiven.io
+  - url: https://aiven.io
+  - url: https://aiven.io
+  - url: https://aiven.io
+  - url: https://aiven.io
+  - url: https://aiven.io

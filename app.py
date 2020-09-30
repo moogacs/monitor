@@ -35,11 +35,10 @@ def start_mointoring(monitor_file, producer, consumer):
     # make sure the consumer is ready with setting up db etc. 
     # before start producing
     while not consumer.is_ready():
+        print("consumer not ready .. ")
         time.sleep(1)
 
     producer.start()
-    
-
 
 def run(topic: str, db: str, user: str, pw: str, host: str, port: str, table: str, is_test: bool, filepath=None):
     if filepath:
@@ -64,7 +63,6 @@ def run(topic: str, db: str, user: str, pw: str, host: str, port: str, table: st
     
 
     return producer, consumer
-
 
 def stop_monitor(producer, consumer):
     if producer:
