@@ -3,13 +3,13 @@ from utils.config import Config
 from datetime import datetime
 
 class Database():
-    def __init__(self, db, user, password, host, port):
+    def __init__(self, db):
         try:
             self.conn = psycopg2.connect( database = db,
-                                            user = user,
-                                            password = password,
-                                            host = host,
-                                            port = port)
+                                            user = Config.PS_USERNAME,
+                                            password = Config.PS_PASSWORD,
+                                            host = Config.PS_HOST,
+                                            port = Config.PS_PORT)
             self.cursor = self.conn.cursor()
             self.db = db
 

@@ -17,11 +17,11 @@ class DB(unittest.TestCase):
     Config.set_env(Config.ENV_TEST)
     
     def test_db(self):
-        connection = None
+        
         aiven_results = 0
         try: 
             
-            psql_conn = Database(Config.PS_DATABASE_NAME, Config.PS_USERNAME, Config.PS_PASSWORD, Config.PS_HOST, Config.PS_PORT)
+            psql_conn = Database(Config.PS_DATABASE_NAME)
             
             print("DB Connected!")
 
@@ -44,10 +44,6 @@ class DB(unittest.TestCase):
             
             prod, cons = app.run(Config.K_MONITOR_TOPIC,
                                 Config.PS_DATABASE_NAME,
-                                Config.PS_USERNAME,
-                                Config.PS_PASSWORD,
-                                Config.PS_HOST,
-                                Config.PS_PORT,
                                 Config.PS_TEST_WEBSITE_TABLE_NAME,
                                 "tests/t_monitor_db.yml")
             

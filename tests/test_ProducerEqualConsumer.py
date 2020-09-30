@@ -18,10 +18,6 @@ class test_ProducerEqualConsumer(unittest.TestCase):
     def test_producer_equal_consumer(self):
         prod, cons = app.run(Config.K_MONITOR_TEST_TOPIC,
                             Config.PS_DATABASE_NAME,
-                            Config.PS_USERNAME,
-                            Config.PS_PASSWORD,
-                            Config.PS_HOST,
-                            Config.PS_PORT,
                             Config.PS_TEST_WEBSITE_TABLE_NAME)
 
         interval = File.read_time_interval()

@@ -18,10 +18,6 @@ class test_heavy(unittest.TestCase):
     def test_heavy(self):
         prod, cons = app.run(Config.K_MONITOR_TEST_TOPIC,
                             Config.PS_DATABASE_NAME,
-                            Config.PS_USERNAME,
-                            Config.PS_PASSWORD,
-                            Config.PS_HOST,
-                            Config.PS_PORT,
                             Config.PS_TEST_WEBSITE_TABLE_NAME,
                             "tests/t_monitor_heavy_test.yml")
 

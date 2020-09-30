@@ -9,7 +9,7 @@ from utils.config import Config
 from utils.file import File
 
 
-def start_mointoring(monitor_file, producer, consumer):
+def start_mointoring(monitor_file: str, producer: Producer, consumer: Consumer):
     monitors =  monitor_file['monitors']
 
     for site in monitors:
@@ -40,7 +40,7 @@ def start_mointoring(monitor_file, producer, consumer):
 
     producer.start()
 
-def run(topic: str, db: str, user: str, pw: str, host: str, port: str, table: str, filepath=None):
+def run(topic: str, db: str, table: str, filepath=None):
     if filepath:
         monitor_file = File.read_yaml_monitor_file(filepath)
     else:
@@ -58,9 +58,8 @@ def run(topic: str, db: str, user: str, pw: str, host: str, port: str, table: st
 
     producer = Producer(topic, interval)
 
-    consumer = Consumer(topic, db, user, pw, host, port, table)
+    consumer = Consumer(topic, db, table)
     start_mointoring(monitor_file, producer, consumer)
-    
 
     return producer, consumer
 
@@ -74,17 +73,9 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         run(Config.K_MONITOR_TOPIC,
             Config.PS_DATABASE_NAME,
-            Config.PS_USERNAME,
-            Config.PS_PASSWORD,
-            Config.PS_HOST,
-            Config.PS_PORT,
             Config.PS_WEBSITE_TABLE_NAME,
             sys.argv[1])
     else:
         run(Config.K_MONITOR_TOPIC,
             Config.PS_DATABASE_NAME,
-            Config.PS_USERNAME,
-            Config.PS_PASSWORD,
-            Config.PS_HOST,
-            Config.PS_PORT,
             Config.PS_WEBSITE_TABLE_NAME)

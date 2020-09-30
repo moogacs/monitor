@@ -8,13 +8,9 @@ from kafka.admin import KafkaAdminClient, NewTopic
 
 class Consumer(threading.Thread):
 
-    def __init__(self, topic: str, db: str, user: str, pw: str, host: str, port: str, table: str):
+    def __init__(self, topic: str, db: str, table: str):
         self.topic = topic
         self.db = db
-        self.user = user
-        self.pw = pw
-        self.host = host
-        self.port = port
         self.table = table
 
         threading.Thread.__init__(self)
@@ -51,7 +47,7 @@ class Consumer(threading.Thread):
 
         self.consumer.subscribe([self.topic])
         
-        self.psql_conn = Database(self.db, self.user, self.pw, self.host, self.port)
+        self.psql_conn = Database(self.db)
 
         # consumer is ready to receive data 
         self.is_ready_event.set()
@@ -77,7 +73,7 @@ class Consumer(threading.Thread):
         return self.message_count
 
     def create_table_for_consumer(self):
-        psql_conn = Database(self.db, self.user, self.pw, self.host, self.port)
+        psql_conn = Database(self.db)
         psql_conn.query( """ CREATE TABLE IF NOT EXISTS """ + self.table + """ 
                         (name varchar(255),
                         website varchar(255) NOT NULL,
