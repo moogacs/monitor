@@ -10,9 +10,11 @@ from utils.file import File
 from utils.utils import Utils
 
 
-def start_mointoring(monitor_file: str, producer: Producer, consumer: Consumer):
+def start_mointoring(monitors: list, producer: Producer, consumer: Consumer):
 
-    monitors =  monitor_file['monitors']
+    if not len(monitors):
+        return 
+    
     for task in monitors:
         
         #Validate URL
@@ -36,36 +38,27 @@ def start_mointoring(monitor_file: str, producer: Producer, consumer: Consumer):
 
     producer.start()
 
-def run(topic: str, db: str, table: str, filepath=None):
-    if filepath:
-        monitor_file = File.read_yaml_monitor_file(filepath)
-    else:
-        monitor_file = File.read_yaml_monitor_file()
-
-    if 'interval' not in monitor_file:
-        raise Exception('INTERVAL_NOT_FOUND')
-        return
-
-    if 'monitors' not in monitor_file:
-        raise Exception('MONITORS_NOT_FOUND')
-        return
-
-    interval =  monitor_file['interval']
-
-    producer = Producer(topic, interval)
-
-    consumer = Consumer(topic, db, table)
-
-    start_mointoring(monitor_file, producer, consumer)
-
-    return producer, consumer
-
-def stop_monitor(producer, consumer):
+def stop_monitor(producer: Producer, consumer: Consumer):
     if not producer or not consumer:
         return
 
     producer.stop()
     consumer.stop()
+    
+def run(topic: str, db: str, table: str, filepath=None):
+    if not filepath:
+        filepath = Config.MONITERFILE
+    
+    interval = File.read_time_interval(filepath)
+    monitors = File.read_monitors(filepath)
+        
+    producer = Producer(topic, interval)
+
+    consumer = Consumer(topic, db, table)
+
+    start_mointoring(monitors, producer, consumer)
+
+    return producer, consumer
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
