@@ -27,7 +27,8 @@ class Consumer(threading.Thread):
                                     security_protocol=Config.K_SECURITY_PROTOCOL,
                                     ssl_cafile=Config.K_SSL_CAT_FILE,
                                     ssl_certfile=Config.K_SSL_CERT_FILE,
-                                    ssl_keyfile=Config.K_SSL_KEY_FILE)
+                                    ssl_keyfile=Config.K_SSL_KEY_FILE,
+                                    fetch_max_wait_ms = 0)
 
         self.create_table_for_consumer()
 
