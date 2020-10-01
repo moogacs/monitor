@@ -27,8 +27,7 @@ class Consumer(threading.Thread):
                                     security_protocol=Config.K_SECURITY_PROTOCOL,
                                     ssl_cafile=Config.K_SSL_CAT_FILE,
                                     ssl_certfile=Config.K_SSL_CERT_FILE,
-                                    ssl_keyfile=Config.K_SSL_KEY_FILE,
-                                    fetch_max_wait_ms = 0)
+                                    ssl_keyfile=Config.K_SSL_KEY_FILE)
 
         self.create_table_for_consumer()
 
@@ -38,6 +37,7 @@ class Consumer(threading.Thread):
         return self.is_ready_event.is_set()
 
     def stop(self):
+        time.sleep(10)
         self.stop_event.set()
 
     def run(self):
