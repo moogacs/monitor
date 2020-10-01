@@ -1,6 +1,7 @@
 import re
 import requests
 from utils.config import Config
+from utils.utils import Utils
 
 class Network:
 
@@ -23,7 +24,7 @@ class Network:
             return None
 
         # if url is not valid should return
-        if not bool(re.match(Config.URL_REGEX, task['url'])):
+        if not Utils.is_valid_URL(task['url']):
             print("PARSE_URL_ERROR", task['url'])
             return None
 

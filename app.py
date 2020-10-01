@@ -7,35 +7,31 @@ from kafka_monitor.consumer import Consumer
 from kafka_monitor.producer import Producer
 from utils.config import Config
 from utils.file import File
+from utils.utils import Utils
 
 
 def start_mointoring(monitor_file: str, producer: Producer, consumer: Consumer):
-    monitors =  monitor_file['monitors']
 
-    for site in monitors:
-        website_task = {}
-        if 'name' in site:
-            name = site['name']
-            website_task["name"] = name
-        if 'url' in site:
-            url = site['url']
-            website_task["url"] = url
-        if 'pattern' in site:
-            pattern = site['pattern']
-            website_task["pattern"] = pattern
+    monitors =  monitor_file['monitors']
+    for task in monitors:
         
-        if not url:
-            print("Error parsing yaml file, has no url at => ", str(site))
+        #Validate URL
+        if 'url' not in task:
+            print("CORRUPTED_URL_VALUE_ERROR with item => " + str(task))
+            continue
+        
+        if not Utils.is_valid_URL(task['url']):
+            print("PARSE_URL_ERROR", task['url'])
             continue
 
-        producer.append_task(website_task)
+        producer.append_task(task)
     
     consumer.start()
     
     # make sure the consumer is ready with setting up db etc. 
     # before start producing
     while not consumer.is_ready():
-        print("consumer not ready .. ")
+        print("consumer not ready yet .. ")
         time.sleep(1)
 
     producer.start()
@@ -59,6 +55,7 @@ def run(topic: str, db: str, table: str, filepath=None):
     producer = Producer(topic, interval)
 
     consumer = Consumer(topic, db, table)
+
     start_mointoring(monitor_file, producer, consumer)
 
     return producer, consumer
