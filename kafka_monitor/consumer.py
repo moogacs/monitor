@@ -37,6 +37,8 @@ class Consumer(threading.Thread):
         return self.is_ready_event.is_set()
 
     def stop(self):
+        #TODO: find better approach instead of time wait
+        # it's intended for calling .stop() in testing. specially test_heavy.py
         time.sleep(10)
         self.stop_event.set()
 
