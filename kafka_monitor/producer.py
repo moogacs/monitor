@@ -1,4 +1,5 @@
 import threading
+import multiprocessing
 import json
 import time
 import sys
@@ -42,66 +43,46 @@ class Producer(threading.Thread):
         print("Producer runs with topic \"" + self.topic + "\"!")
         i = 1
         
-        # do the work in a different thread to make sure there is no time delay inside the main loop
-        # the used approach is to create a worker thread with worker queue which is responsible to check taget websites 
-        # then let the producers send the results
-
-        # to make sure the target wesbites is checked in the correct time periodically, re-fill
-        # the worker queue after the time interval 
-        worker_thread = Thread(target = self.tagerts_checker_worker)
-        worker_thread.daemon = True
-        
-
+        pool = multiprocessing.Pool()
+        last_time_called = datetime.datetime.now()
         while not self.stop_event.is_set():
-            print("iteration no. => " + str(i))
+
+            # information logging
+            print("Iteration no. => " + str(i))
             print("Currunt active thread count => " + str(threading.active_count()))
+            print("last iteration called since (time delta)=> " + str(datetime.datetime.now() - last_time_called))
+            last_time_called = datetime.datetime.now()
 
             if self.stop_event.is_set():
                 break
 
-            # fill the tasks queue with websites
-            for task in self.tasks:
-                self.worker_queue.append(task)
-            
-            if not worker_thread.is_alive():
-                worker_thread.start()
+            pool.map_async(Network.get_website_status, self.tasks, callback=self.send_results)
 
             i += 1
             time.sleep(self.interval)
 
+        # block at this line until all processes are done
+        pool.close()
+        pool.join()
         self.producer.close()
         print("Producer of \"" + self.topic + "\" is stopped!")
     
     def get_message_count(self):
         return self.message_count
 
-    def tagerts_checker_worker(self):
-        while True:
-            if self.stop_event.is_set():
-                break
-            
-            # pop from the queue, then process, then send
-            if self.worker_queue:
-                task = self.worker_queue.pop(0)
-                pattern = None
-                name = ""
+    def send_results(self, res):
+        results = []
+        results.extend(res)
 
-                if 'pattern' in task:
-                    pattern = task['pattern']
+        for website_status in results:
+            if website_status:
+                self.producer.send(self.topic, website_status)
 
-                if 'name' in task:
-                    name = task['name']
+                print("\nProducer sends ", end="")
 
-                if 'url' not in task:
-                    print("CORRUPTED_URL_VALUE_ERROR with item => " + str(task))
-                    continue
+                if website_status['name']:
+                    print(website_status['name'])
 
-                if self.stop_event.is_set():
-                    break
-                
-                website_status = Network.get_website_status(name, task['url'], pattern)
+                print(str(website_status))
 
-                if website_status:
-                    self.message_count += 1
-                    print("\nProducer sends " + website_status['name']+ " \n"+ str(website_status))
-                    self.producer.send(self.topic, website_status)
+                self.message_count += 1

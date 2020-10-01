@@ -8,8 +8,6 @@
 2. Install the contents of [requirements](https://github.com/moogacs/monitor/blob/master/requirements.txt) `requirements.txt` into a Python 3.6+ environment
 3. Run the app according to Usage
 
-
-
 # Configuration
 
 To configure tasks simply create a YAML file containing your interval and websites, patterns. Here’s an example:
@@ -87,4 +85,53 @@ The current docker [file](https://github.com/moogacs/monitor/blob/master/Dockerf
 docker build -t monitor .
 
 docker run monitor
+```
+
+# Multiprocessing
+
+The kafka-producer and kafka-consumer are threads and for the approach of that solution [multiprocessing](https://docs.python.org/3/library/multiprocessing.html) package is used for **parallelism** by looking throught the code snippet below:
+
+* because of `multiprocessing.Pool()` is used in without certin number of processes, then the number returned by `os.cpu_count()` is used which is returning the number of CPUs in the system.
+
+* by calling `map_sync` which make the request for the url in an individual process **in parallel** then return the results to a callback function `send_result` to send the result from the producer.
+
+* till the producer not stopped or killed the system will sleep the time interval requested, then going to create another processes to handle the next interval
+
+* at the end for waiting all process to be finished one call `pool.join()`
+
+```
+pool = multiprocessing.Pool()
+while not self.stop_event.is_set():
+    if self.stop_event.is_set():
+        break
+    
+    pool.map_async(Network.get_website_status, self.tasks, callback=self.send_results)
+
+    i += 1
+    time.sleep(self.interval)
+
+# block at this line until all processes are done
+pool.close()
+pool.join()
+self.producer.close()
+```
+
+
+```
+def send_results(self, res):
+        results = []
+        results.extend(res)
+
+        for website_status in results:
+            if website_status:
+                self.producer.send(self.topic, website_status)
+
+                print("\nProducer sends ", end="")
+
+                if website_status['name']:
+                    print(website_status['name'])
+
+                print(str(website_status))
+
+                self.message_count += 1
 ```

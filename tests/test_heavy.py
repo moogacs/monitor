@@ -15,17 +15,15 @@ from kafka.admin import KafkaAdminClient
 class test_heavy(unittest.TestCase):
     Config.set_env(Config.ENV_TEST)
     
+    #sorry https://aiven.io I made a lot of requests!
+
     def test_heavy(self):
         prod, cons = app.run(Config.K_MONITOR_TEST_TOPIC,
                             Config.PS_DATABASE_NAME,
                             Config.PS_TEST_WEBSITE_TABLE_NAME,
                             "tests/t_monitor_heavy_test.yml")
 
-        interval = File.read_time_interval("tests/t_monitor_heavy_test.yml")
-
-        time.sleep(interval * 5)
-
-        self.assertEqual(prod.get_message_count(), cons.get_message_count())
+        time.sleep(30)
 
         app.stop_monitor(prod, cons)
 
@@ -37,7 +35,7 @@ class test_heavy(unittest.TestCase):
 
         admin_client.delete_topics([Config.K_MONITOR_TEST_TOPIC])
 
-        
+        self.assertEqual(prod.get_message_count(), cons.get_message_count())
 
 if __name__ == '__main__': 
     unittest.main() 

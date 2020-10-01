@@ -1,5 +1,6 @@
 import threading
 import json
+import time
 from db import Database
 from kafka import KafkaConsumer
 from utils.config import Config
@@ -54,12 +55,17 @@ class Consumer(threading.Thread):
         
         while not self.stop_event.is_set():
             for message in self.consumer:
-                self.message_count += 1
-                print("\nConsumer receives " + message.value['name']+ " \n"+ str(message.value))
-                self.insert_item_to_db(self.table, message.value)
 
-                if self.stop_event.is_set():
-                    break
+                self.message_count += 1
+
+                print("\nConsumer receives ", end="")
+
+                if message.value['name']:
+                    print(message.value['name'])
+
+                print(str(message.value))
+                
+                self.insert_item_to_db(self.table, message.value)
         
         self.consumer.close()
         print("Consumer of \"" + self.topic + "\" is stopped!")
@@ -76,14 +82,14 @@ class Consumer(threading.Thread):
         psql_conn = Database(self.db)
         psql_conn.query( """ CREATE TABLE IF NOT EXISTS """ + self.table + """ 
                         (name varchar(255),
-                        website varchar(255) NOT NULL,
+                        url varchar(255) NOT NULL,
                         status_code integer NOT NULL,
                         reason varchar(255) NOT NULL,
                         response_time decimal NOT NULL,
                         checked_at timestamp NOT NULL,
                         pattern varchar(255),
                         has_pattern boolean DEFAULT FALSE,
-                        PRIMARY KEY(website, checked_at))  """)
+                        PRIMARY KEY(url, checked_at))  """)
 
         psql_conn.close()
 
@@ -107,7 +113,7 @@ class Consumer(threading.Thread):
             return
 
         query = "INSERT INTO " + table  + """ (name,
-                                                website,
+                                                url,
                                                 status_code,
                                                 reason,
                                                 response_time,
@@ -117,7 +123,7 @@ class Consumer(threading.Thread):
                                                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
 
         vals = (message['name'],
-                message['website'],
+                message['url'],
                 message['status_code'],
                 message['reason'],
                 message['response_time'],

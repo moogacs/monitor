@@ -64,10 +64,11 @@ def run(topic: str, db: str, table: str, filepath=None):
     return producer, consumer
 
 def stop_monitor(producer, consumer):
-    if producer:
-        producer.stop()
-    if consumer:
-        consumer.stop()
+    if not producer or not consumer:
+        return
+
+    producer.stop()
+    consumer.stop()
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
