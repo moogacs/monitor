@@ -5,16 +5,24 @@ This is an app that monitor websites availability over the network with in time 
 * response time
 * search content pattern (optional)
 
+# Getting Started
+1. Clone the repository
+2. Cretate/update a configuration file, see [Configuration](https://github.com/moogacs/monitor/blob/master/docs/DOCUMENTATION.md/#configuration)
+3. Install the contents of [requirements](https://github.com/moogacs/monitor/blob/master/requirements.txt) `requirements.txt` into a Python 3.6+ environment
+4. Run the app according to Usage
+
+
 ## Quickstart
-You can run the app using 2 options with providing 
+You can run the app using onr of 2 options
 1. add websites to `monitor.yml` file
     ```
     python app.py
     ```
-1. create your own file and use `monitor.yml` as an **example** which you can pass it as a variable to the app
+2. create your own file and use `monitor.yml` as an **example** which you can pass it as a variable to the app
     ```
     python app.py monitor.yml
     ```
+   
 ### Createing a docker image:
 ```
 docker build -t monitor .

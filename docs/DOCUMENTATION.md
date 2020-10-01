@@ -2,12 +2,6 @@
 
 "website-monitor" is an app that monitor websites availability over the network with in time interval using **Kafka** Producer which will periodically checks the target websites  and sends the check results to a kafka topic, then a kafka consumer storing the data to an Aiven PostgresSQL database table.
 
-# Getting Started
-1. Clone the repo
-1. Cretate/update a configuration file, see Configuration part
-2. Install the contents of [requirements](https://github.com/moogacs/monitor/blob/master/requirements.txt) `requirements.txt` into a Python 3.6+ environment
-3. Run the app according to Usage
-
 # Configuration
 
 To configure tasks simply create a YAML file containing your interval and websites, patterns. Here’s an example:
