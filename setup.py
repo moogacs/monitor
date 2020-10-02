@@ -3,7 +3,8 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setuptools.setup(
+setuptools.setup
+(
     name="website-monitor",
     version="0.0.1",
     author="Mohamed Badawi",
@@ -13,7 +14,8 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/moogacs/monitor",
     packages=setuptools.find_packages(),
-    classifiers=[
+    classifiers=
+    [
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
