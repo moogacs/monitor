@@ -19,9 +19,9 @@ class Config:
     K_HOST = "kafka-website-monitor-project-50ec.aivencloud.com"
     K_PORT = "26510"
     K_SECURITY_PROTOCOL = "SSL"
-    K_SSL_CAT_FILE  = "utils/secrets/ca.pem"
-    K_SSL_CERT_FILE = "utils/secrets/service.cert"
-    K_SSL_KEY_FILE  = "utils/secrets/service.key"
+    K_SSL_CAT_FILE  = "ADD_YOUR_CAT_FILE"
+    K_SSL_CERT_FILE = "ADD_YOUR_CERT"
+    K_SSL_KEY_FILE  = "ADD_YOUR_CERT_KEY"
     K_MONITOR_TOPIC = "website-monitor"
     K_MONITOR_TEST_TOPIC = "test-website-monitor"
     K_REPLICA_FACTOR = 1
